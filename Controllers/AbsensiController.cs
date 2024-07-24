@@ -66,7 +66,7 @@ namespace TestAbsensi.Controllers
 
         
         // POST: Create
-        [HttpPost("absen-in")]
+        [HttpPost("absen-in/{idKaryawan}")]
         public async Task<Response<AbsensiModel>> Create(int idKaryawan)
         {
             AbsensiModel result = await _absensiService.Create(idKaryawan);

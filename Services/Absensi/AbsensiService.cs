@@ -27,12 +27,13 @@ namespace TestAbsensi.Services.Absensi
             try
             {
                 var karyawan = await _karyawanService.GetById(karyawanId);
-                var absensiInfo = await _repository.FindBy(obj => obj.Karyawan.Id == karyawanId && obj.DateIn == DateOnly.FromDateTime(DateTime.Now));
+                var dateNow = DateOnly.FromDateTime(DateTime.Now);
+                var absensiInfo = await _repository.FindBy(obj => obj.Karyawan.Id == karyawanId && dateNow.CompareTo(obj.DateIn) == 0);
                 if (absensiInfo != null) throw new BadRequest("Karyawan sudah absen masuk");
 
-                var waktuMasuk = TimeOnly.FromDateTime(DateTime.Now);
+                var waktuMasuk = DateTime.Now;
                 string statusMasuk;
-                TimeSpan selisih = waktuMasuk - JADWAL_MASUK;
+                TimeSpan selisih = waktuMasuk - DateTime.Today.Add(JADWAL_MASUK.ToTimeSpan());
                 if (selisih.TotalMinutes < 0)
                 {
                     statusMasuk = "Datang Lebih Awal";
@@ -47,7 +48,7 @@ namespace TestAbsensi.Services.Absensi
                 {
                     Karyawan = karyawan,
                     DateIn = DateOnly.FromDateTime(DateTime.Now),
-                    TimeIn = waktuMasuk,
+                    TimeIn = TimeOnly.FromDateTime(waktuMasuk),
                     StatusMasuk= statusMasuk,
                     StatusKeluar = ""
             };
@@ -66,14 +67,15 @@ namespace TestAbsensi.Services.Absensi
             try
             {
                 var karyawanInfo = await _karyawanService.GetById(idKaryawan);
-                var absensiInfo = await _repository.FindBy(obj => obj.Karyawan.Id == idKaryawan && obj.DateIn == DateOnly.FromDateTime(DateTime.Now));
+                var dateNow = DateOnly.FromDateTime(DateTime.Now);
+                var absensiInfo = await _repository.FindBy(obj => obj.Karyawan.Id == idKaryawan && dateNow.CompareTo(obj.DateIn) == 0);
                 if (absensiInfo == null)  throw new BadRequest("Karyawan belum absen masuk"); ;
                 if (absensiInfo.StatusKeluar != "") throw new BadRequest("Karyawan sudah absen keluar"); ;
               
                 
-                var waktuKeluar = TimeOnly.FromDateTime(DateTime.Now);
+                var waktuKeluar = DateTime.Now;
                 string statusKeluar;
-                TimeSpan selisih = waktuKeluar - JADWAL_KELUAR;
+                TimeSpan selisih = waktuKeluar - DateTime.Today.Add(JADWAL_KELUAR.ToTimeSpan()); ;
                 if (selisih.TotalMinutes < 0)
                 {
                     statusKeluar = "Pulang Lebih Awal";
@@ -90,7 +92,7 @@ namespace TestAbsensi.Services.Absensi
                     Id = absensiInfo.Id,
                     DateIn = absensiInfo.DateIn,
                     TimeIn = absensiInfo.TimeIn,
-                    TimeOut = waktuKeluar,
+                    TimeOut = TimeOnly.FromDateTime(waktuKeluar),
                     StatusMasuk= absensiInfo.StatusMasuk,
                     StatusKeluar = statusKeluar
                    
