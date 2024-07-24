@@ -56,7 +56,7 @@ namespace TestAbsensi.Services.Auth
 
             //save token to redis
             var db = _redis.GetDatabase();
-            await db.StringSetAsync($"{findedUser.Username}-{findedUser.Id}", tokenHandler.WriteToken(token));
+            await db.StringSetAsync($"{findedUser.Username}-{findedUser.Id}", tokenHandler.WriteToken(token),new TimeSpan(24,0,0));
 
             return result;
         }
